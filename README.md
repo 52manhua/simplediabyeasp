@@ -12,3 +12,7 @@
 1. 绿色运行 本人使用  sws AspWebServer2.3 或者使用 netbox 也行?
 1. 简单: 界面和代码都很简单
 1. 不知道是什么说? 后期可能增加自动建库的功能
+
+
+**自制的 easyasp2.1 思维导图**
+ ![image](https://github.com/52manhua/simplediabyeasp/blob/master/EasyAsp.png)
