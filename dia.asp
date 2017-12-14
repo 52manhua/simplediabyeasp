@@ -1,4 +1,5 @@
 <!-- #include file="easp.asp" -->
+<!-- #include file="config.asp" -->
 <head>
 <META http-equiv=Content-Type content="text/html; charset=gb2312">
 <style>
@@ -9,8 +10,6 @@
 '''获得翻页信息
 'page =  easp.r("page",1)
 'easp.wn "page= " & page
-'''全局变量
-Dim dbfile: dbfile= "a2000.mdb"
 
 
 '''获得表格信息
@@ -18,20 +17,22 @@ Dim action
 action =  easp.R("action",0)
 
 If Not easp.isN(action) then
-
+dim uid, uname, ucode, search
 	Select Case action
 		Case "search":
-		Dim search
 		search = easp.CheckForm(Easp.R("search",0),"",1,"搜索内容不能为空!")
 		
 		Case "add":
-		Dim uname, ucode
 		uname =  easp.CheckForm(Easp.R("name",0),"",1,"姓名不能为空!:不是有效的用户名!")
 		ucode = easp.CheckForm(Easp.R("code",0),"",1,"编号/代码不能为空!")
 
 		Case "del":
-		Dim uid
 		uid =  easp.CheckForm(Easp.R("delid",1),"number",1,"删除编号格式不正确!")
+
+		case "mod":
+		uid = easp.CheckForm(Easp.R("modid",1),"number",1,"删除编号格式不正确!")
+		uname =  easp.CheckForm(Easp.R("name",0),"",1,"姓名不能为空!:不是有效的用户名!")
+		ucode = easp.CheckForm(Easp.R("code",0),"",1,"编号/代码不能为空!")
 	End select
 End if
 %>
@@ -42,7 +43,7 @@ easp.wn "<title>" & pagename & "</title>"
 easp.wn "<a href='dia.asp'>" & pagename & "</a>"
 
 Set Db = new EasyAsp.db
-Db.dbconn = Db.openconn(1,dbfile,"")
+Db.dbconn = Db.openconn(1,dbf,"")
 Db.Debug = True
 
 ''''搜索
@@ -79,7 +80,7 @@ pagelist= "<div class='divscroll'><br><table><tr><td>姓 名</td><td>号 码</td><td
 
 while Not (rs.eof or rs.bof)
 
-	pagelist = pagelist & "<tr><td>" & rs("_name") & "</td><td>code:" & rs("code") & "</td><td>" & "<a href=?action=del&delid="& rs(0) &">删除</a></td></tr>"
+	pagelist = pagelist & "<tr><form action='dia.asp?action=mod&modid="& rs(0) &"' method='post'><td><input type='text' value='" & rs("_name") & "' name='name'></td><td>code:<input type='text' value='" & rs("code") & "' name='code'></td><td>" & "<a href=?action=del&delid="& rs(0) &">删除</a><input type='submit' value='修改'></td></form></tr>"
 	rs.movenext()
 Wend
 easp.wn(rs.recordcount) & " 条 记录."
@@ -114,7 +115,11 @@ If action = "del" then
 End If
 
 ''''修改记录
-'db.UpdateRecord "cs",Array("_name:sme"),Array("code:a12345")
+if action = "mod" then
+	easp.wn "run"
+	db.UpdateRecord "cs","id = "& uid,Array("_name:" & uname,"code:" & ucode)
+	easp.rr "dia.asp"
+end if
 
 
 ''''分页
